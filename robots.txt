@@ -1,0 +1,35 @@
+# Tell all crawlers where your sitemap lives
+Sitemap: https://robarch2024.orgzac/sitemap.xml
+
+# Global rules
+User-agent: *
+# Don’t crawl any staging, admin or private directories
+Disallow: /drafts/
+Disallow: /admin/
+Disallow: /cgi-bin/
+Disallow: /_includes/
+Disallow: /_layouts/
+Disallow: /_site/
+Disallow: /assets/vendor/
+Disallow: /.well-known/appspecific/
+
+
+# Allow important assets (CSS/JS) for rich previews
+Allow: /assets/css/
+Allow: /assets/js/
+
+# Prevent crawling of search or filtering URLs
+User-agent: *
+Disallow: /search
+Disallow: /filter
+
+# Optional crawl‑rate hints (may help low‑traffic sites)
+# Crawl‑delay: 10
+
+# Specific rules for aggressive bots
+User-agent: BadBot
+Disallow: /
+
+# Crawl‑delay for slower crawlers, e.g., Bing
+User-agent: bingbot
+Crawl-delay: 5
