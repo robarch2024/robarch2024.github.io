@@ -1,5 +1,5 @@
 # Tell all crawlers where your sitemap lives
-Sitemap: https://robarch2024.orgzac/sitemap.xml
+Sitemap: https://robarch2024.org/sitemap.xml
 
 # Global rules
 User-agent: *
