@@ -104,7 +104,11 @@ ErrorDocument 500 /500/index.html
 # Add any site‑specific redirects below, e.g.:
 # Redirect 301 /old-path/ /new-path/
 
-Redirect 301 /project/wood-chip-barn/ /project/tree-fork-truss/
-Redirect 301 /resume/ /assets/download/ZacharyMollica_FullCV.pdf
-Redirect 301 /assets/download/250108_ZacharyMollica_CV.pdf/ /assets/download/ZacharyMollica_FullCV.pdf
-Redirect 301 /project/marshmallow-laser-feast/ /project/mlf-ceiba/
+Redirect 301 /branch-production/ /workshop/branch-production/
+Redirect 301 /choreographing-cable-robots/ /workshop/choreographing-cable-robots/
+Redirect 301 /collaboration-between-design-and-automated-fabrication/ /workshop/collaboration-between-design-and-automated-fabrication/
+Redirect 301 /collaborative-augmented-assembly/ /workshop/collaborative-augmented-assembly/
+Redirect 301 /dropship-joyride/ /workshop/dropship-joyride/
+Redirect 301 /exploring-centralization-in-collective-robotic-construction/ /workshop/exploring-centralization-in-collective-robotic-construction/
+Redirect 301 /robots-in-the-landscape/ /workshop/robots-in-the-landscape/
+Redirect 301 /sculpting-space-with-on-site-robotics/ /workshop/sculpting-space-with-on-site-robotics/
