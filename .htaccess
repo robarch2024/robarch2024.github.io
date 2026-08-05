@@ -10,13 +10,15 @@ AddType image/webp  .webp
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # 1a) Redirect to HTTPS
-  RewriteCond %{HTTPS} !=on
-  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Never expose dot-directories such as a deployment checkout's .git data.
+  # Keep ACME's standardized .well-known path available for certificate renewal.
+  RewriteRule "(^|/)\.(?!well-known(?:/|$))" - [F,L]
 
-  # 1b) Canonical host: force non‑www zacharymolli.ca
-  RewriteCond %{HTTP_HOST} !^zacharymolli\.ca$ [NC]
-  RewriteRule ^ https://zacharymolli.ca%{REQUEST_URI} [L,R=301]
+  # Redirect directly to the configured canonical origin. Avoid reflecting an
+  # untrusted Host header into the Location response.
+  RewriteCond %{HTTPS} !=on [OR]
+  RewriteCond %{HTTP_HOST} !^robarch2024\.org$ [NC]
+  RewriteRule ^ https://robarch2024.org%{REQUEST_URI} [L,R=301,NE]
 </IfModule>
 
 
@@ -24,12 +26,7 @@ AddType image/webp  .webp
 # 2) COMPRESSION (mod_deflate)
 ############################################################
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE
-    text/html text/plain text/xml
-    text/css application/javascript application/json
-    application/xml application/xhtml+xml
-    application/rss+xml application/atom+xml
-    font/ttf font/otf font/woff font/woff2
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json application/xml application/xhtml+xml application/rss+xml application/atom+xml font/ttf font/otf font/woff font/woff2
 
   SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|webp|avif)$ no-gzip
 </IfModule>
@@ -61,11 +58,14 @@ AddType image/webp  .webp
 </IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "\.(css|js|svg|png|jpe?g|gif|woff2?|ttf|avif|webp)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=604800"
   </FilesMatch>
-  <FilesMatch "\.(png|jpe?g)$">
-    Header append Vary Accept
+  <FilesMatch "\.(svg|png|jpe?g|gif|avif|webp)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(woff2?|ttf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 </IfModule>
 
@@ -74,13 +74,14 @@ AddType image/webp  .webp
 # 4) SECURITY HEADERS
 ############################################################
 <IfModule mod_headers.c>
-  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; media-src 'self'; frame-src https://player.vimeo.com; connect-src 'self' https://analytics.google.com https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com; upgrade-insecure-requests"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-  # Optional CSP placeholder:
-  # Header always set Content-Security-Policy "default-src 'self';"
+  Header always set X-Permitted-Cross-Domain-Policies "none"
+  Header always unset X-Powered-By
 </IfModule>
 
 
@@ -92,14 +93,13 @@ FileETag None
   Header unset ETag
 </IfModule>
 ServerSignature Off
-ServerTokens Prod
 
 
 ############################################################
 # 6) CUSTOM ERRORS & REDIRECTS
 ############################################################
-ErrorDocument 404 /404/index.html
-ErrorDocument 500 /500/index.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
 
 # Add any site‑specific redirects below, e.g.:
 # Redirect 301 /old-path/ /new-path/
